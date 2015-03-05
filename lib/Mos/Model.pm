@@ -34,8 +34,8 @@ sub import {
       *{"$class\::$name"} = \&{$name};
     }
 
-    my $attributes = [];
-    *{"$class\::attributes"} = sub { $attributes };
+    my $attribute_map = {};
+    *{"$class\::attribute_map"} = sub { $attribute_map };
   }
   1;
 }
@@ -56,7 +56,7 @@ sub column ($$) {
     *{"$class\::$name"} = _attribute($name, $type);
   }
 
-  push @{$class->attributes}, $name;
+  $class->attribute_map->{$name} = $type;
 }
 
 sub _attribute ($$) {
@@ -75,8 +75,7 @@ sub _attribute ($$) {
 
 sub check_attribute ($) {
   my ($self, $key) = @_;
-  my @keys = grep { $_ eq $key } @{$self->attributes};
-  @keys == 1;
+  $self->attribute_map->{$key};
 }
 
 sub read_attribute ($) {
