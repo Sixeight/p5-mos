@@ -12,7 +12,7 @@ subtest "DSL" => sub {
   ok(Model::Test->can("mk_attributes"),      "has mk_attributes");
   ok(Model::Test->can("mk_time_attributes"), "has mk_time_attributes");
   ok(Model::Test->can("normal_attributes"),  "has normal_attributes");
-  ok(Model::Test->can("time_attributes"),     "has time_attributes");
+  ok(Model::Test->can("time_attributes"),    "has time_attributes");
   ok(Model::Test->can("attributes"),         "has attributes");
 };
 
