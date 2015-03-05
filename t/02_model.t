@@ -11,6 +11,9 @@ package main;
 subtest "DSL" => sub {
   ok(Model::Test->can("column"), "has column");
   ok(Model::Test->can("attribute_map"), "has attribute_map");
+  ok(Model::Test->can("attributes"), "has attributes");
+  ok(Model::Test->can("normal_attributes"), "has normal_attributes");
+  ok(Model::Test->can("time_attributes"), "has time_attributes");
 };
 
 package Model::Person;
@@ -28,6 +31,21 @@ package main;
 subtest "attribute_map" => sub {
   my $attribute_map = {id => "int", name => "string", age => "int", borned_at => "datetime"};
   is_deeply(Model::Person->attribute_map, $attribute_map, "attributes are id name age boarned_at");
+};
+
+subtest "attributes" => sub {
+  my $attributes = [ qw( age borned_at id name ) ];
+  is_deeply(Model::Person->attributes, $attributes, "attributes are id name age boarned_at");
+};
+
+subtest "normal attributes" => sub {
+  my $attributes = [ qw( age id name ) ];
+  is_deeply(Model::Person->normal_attributes, $attributes, "attributes are id name age boarned_at");
+};
+
+subtest "time attributes" => sub {
+  my $attributes = [ qw( borned_at ) ];
+  is_deeply(Model::Person->time_attributes, $attributes, "attributes are id name age boarned_at");
 };
 
 sub test_normal_attribute {

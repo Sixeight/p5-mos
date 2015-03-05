@@ -36,6 +36,13 @@ sub import {
 
     my $attribute_map = {};
     *{"$class\::attribute_map"} = sub { $attribute_map };
+    *{"$class\::attributes"} = sub { [sort keys %$attribute_map] };
+    *{"$class\::normal_attributes"} = sub {
+      [grep { $attribute_map->{$_} ne "datetime" } sort keys %$attribute_map]
+    };
+    *{"$class\::time_attributes"} = sub {
+      [grep { $attribute_map->{$_} eq "datetime" } sort keys %$attribute_map]
+    };
   }
   1;
 }
