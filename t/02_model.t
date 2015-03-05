@@ -84,4 +84,22 @@ subtest "set as time attribute" => sub {
   test_time_attribute($person);
 };
 
+subtest "read_attribute" => sub {
+  my $person = Model::Person->new({name => "test"});
+  is($person->read_attribute("name"), "test", "certain attribute name");
+  is($person->read_attribute("id"), undef, "certain attribute name but undef");
+  eval { $person->read_attribute("wrong") };
+  like($@, qr/wrong attribute name/, "wrong attribute name");
+};
+
+subtest "write_attribute" => sub {
+  my $person = Model::Person->new({name => "test"});
+  $person->write_attribute("id", 1);
+  is($person->id, 1, "new attribute value");
+  $person->write_attribute("name", "name");
+  is($person->name, "name", "update attribute value");
+  eval { $person->write_attribute("tiger", "cat") };
+  like($@, qr/wrong attribute name/, "wrong attribute name");
+};
+
 done_testing;

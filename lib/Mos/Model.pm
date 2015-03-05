@@ -4,8 +4,6 @@ use strict;
 use warnings;
 
 use Carp ();
-use Class::Accessor::Lite new => 1;
-
 use Mos::Util;
 
 our @EXPORT = qw(mk_attributes mk_time_attributes);
@@ -31,15 +29,37 @@ sub import {
   1;
 }
 
+sub new {
+  my $class = shift;
+  bless {
+    (@_ == 1 && ref $_[0] == "HASH") ? %{$_[0]} : @_
+  }, $class;
+}
+
 sub mk_attributes {
   my @names = @_;
   (@names > 0) or Carp::croak("require names");
   my $class = caller(0);
 
-  Class::Accessor::Lite::_mk_accessors($class, @names);
+  {
+    no strict "refs";
+    *{"$class\::$_"} = _accessor($_) for @names;
+  }
 
   if ($class->can("normal_attributes")) {
     push @{$class->normal_attributes}, @names;
+  }
+}
+
+sub _accessor {
+  my $name = shift;
+  sub {
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+      $self->write_attribute($name, $arg);
+    } else {
+      $self->read_attribute($name);
+    }
   }
 }
 
@@ -69,13 +89,31 @@ sub _time_accessor {
   sub {
     my ($self, $arg) = @_;
     if (defined $arg) {
-      $self->{$name} = "". $arg;
+      $self->write_attribute($name, "". $arg);
       return;
     }
     $self->{"_$name"} ||= eval {
-      Mos::Util::datetime_from_db($self->{$name});
+      Mos::Util::datetime_from_db($self->read_attribute($name));
     };
   };
+}
+
+sub check_attribute ($) {
+  my ($self, $key) = @_;
+  my @keys = grep { $_ eq $key } @{$self->attributes};
+  @keys == 1;
+}
+
+sub read_attribute ($) {
+  my ($self, $key) = @_;
+  $self->check_attribute($key) or Carp::croak("wrong attribute name");
+  $self->{$key}
+}
+
+sub write_attribute ($$) {
+  my ($self, $key, $value) = @_;
+  $self->check_attribute($key) or Carp::croak("wrong attribute name");
+  $self->{$key} = $value;
 }
 
 1;
