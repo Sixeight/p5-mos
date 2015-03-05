@@ -72,6 +72,21 @@ subtest "set as time attribute" => sub {
   test_time_attribute($person);
 };
 
+subtest "convert value with type" => sub {
+  my $person = Model::Person->new;
+  $person->id("5");
+  is($person->id, 5, qq("5" has converted to 5));
+  $person->id("a");
+  is($person->id, 0, qq("a" has converted to 0));
+  $person->name(10);
+  is($person->name, "10", qq(10 has converted to "10"));
+  my $time = DateTime->new(year => 2015, month => 3, day => 4, hour => 16, minute => 23, second => 13);
+  $person->borned_at("2015-03-04 16:23:13");
+  is($person->borned_at, $time, "string has converted datetime");
+  $person->borned_at($time);
+  is($person->read_attribute("borned_at"), "2015-03-04 16:23:13", "datetime has conveted string")
+};
+
 subtest "read_attribute" => sub {
   my $person = Model::Person->new({name => "test"});
   is($person->read_attribute("name"), "test", "certain attribute name");
