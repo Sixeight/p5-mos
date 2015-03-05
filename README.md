@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/Sixeight/p5-mos.svg?branch=master)](https://travis-ci.org/Sixeight/p5-mos)
 # NAME
 
 Mos - Simple O/R mapper for my Perl practice.
