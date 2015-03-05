@@ -10,6 +10,7 @@ package main;
 
 subtest "DSL" => sub {
   ok(Model::Test->can("column"), "has column");
+  ok(Model::Test->can("timestamp"), "has timestamp");
   ok(Model::Test->can("attribute_map"), "has attribute_map");
   ok(Model::Test->can("attributes"), "has attributes");
   ok(Model::Test->can("normal_attributes"), "has normal_attributes");
