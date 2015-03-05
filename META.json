@@ -42,11 +42,18 @@
       },
       "runtime" : {
          "requires" : {
+            "Carp" : "0",
+            "Class::Load" : "0",
+            "DBIx::Sunny" : "0",
+            "DateTime" : "0",
+            "DateTime::Format::MySQL" : "0",
+            "SQL::Maker" : "0",
             "perl" : "5.008001"
          }
       },
       "test" : {
          "requires" : {
+            "DBD::SQLite" : "0",
             "Test::More" : "0.98"
          }
       }
