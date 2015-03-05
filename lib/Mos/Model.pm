@@ -16,10 +16,13 @@ our $TYPES = {
   datetime => sub {
     my ($v, $in_out) = @_;
     if ($in_out eq $CONVERT_IN) {
-      "" . $v;
+      if ($v->isa("DateTime")) {
+        $v = Mos::Util::time_string_from_datetime($v);
+      }
     } else {
-      Mos::Util::datetime_from_db($v);
+      $v = Mos::Util::datetime_from_time_string($v);
     }
+    $v;
   },
 };
 
