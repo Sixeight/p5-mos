@@ -14,10 +14,18 @@ sub now () {
     $now;
 }
 
-sub datetime_from_db ($) {
-    my $dt = DateTime::Format::MySQL->parse_datetime( shift );
+sub time_string_from_datetime ($) {
+    my $dt = shift;
     $dt->set_time_zone($Mos::Util::TIME_ZONE);
-    $dt->set_formatter( DateTime::Format::MySQL->new );
+    $dt->set_formatter(DateTime::Format::MySQL->new);
+    "" . $dt;
+}
+
+sub datetime_from_time_string ($) {
+    my $ts = shift;
+    my $dt = DateTime::Format::MySQL->parse_datetime($ts);
+    $dt->set_time_zone($Mos::Util::TIME_ZONE);
+    $dt->set_formatter(DateTime::Format::MySQL->new);
     $dt;
 }
 
