@@ -82,6 +82,11 @@ subtest "all with option" => sub {
   ok(@$users == 3, "fetch limited users");
 };
 
+subtest "all with order" => sub {
+  my $users = Service::User->all({order_by => "id DESC"});
+  is($users->[0]->id, 5, "DESC order");
+};
+
 subtest "find with id" => sub {
   my $user = Service::User->find(1);
   is($user->id, 1, "user id is 1");
