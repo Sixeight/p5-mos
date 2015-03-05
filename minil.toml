@@ -1,6 +1,5 @@
 name = "Mos"
-# badges = ["travis"]
+badges = ["travis"]
 authority="cpan:SIXEIGHT"
 
 module_maker="ModuleBuildTiny"
-
