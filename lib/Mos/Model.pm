@@ -16,7 +16,7 @@ our $TYPES = {
   datetime => sub {
     my ($v, $in_out) = @_;
     if ($in_out eq $CONVERT_IN) {
-      if ($v->isa("DateTime")) {
+      if (ref $v eq "DateTime") {
         $v = Mos::Util::time_string_from_datetime($v);
       }
     } else {
