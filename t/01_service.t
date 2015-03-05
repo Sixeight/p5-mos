@@ -35,6 +35,11 @@ subtest "connect" => sub {
   ok(!Service->is_connected, "disconnect");
 };
 
+subtest "connect without dsn" => sub {
+  eval { Mos::Service->connect };
+  like($@, qr/need dsn/, "need dsn");
+};
+
 Service::User->connect;
 
 Service::User->dbh->query(<<EOS

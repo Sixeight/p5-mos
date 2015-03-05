@@ -48,6 +48,7 @@ sub model_name {
 sub connect {
   my $class = shift;
   my ($dsn, $user, $pass, $attr) = @_;
+  (defined $dsn) or Carp::croak("need dsn");
   if (!defined $attr || ref $attr ne "HASH") {
     $attr = {};
   }
