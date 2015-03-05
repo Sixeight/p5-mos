@@ -6,7 +6,22 @@ use warnings;
 use Carp ();
 use Mos::Util;
 
-our @EXPORT = qw(mk_attributes mk_time_attributes);
+our @EXPORT = qw(column);
+
+our $CONVERT_IN  = "in";
+our $CONVERT_OUT = "out";
+our $TYPES = {
+  int      => sub { no warnings; $_[0] + 0 },
+  string   => sub { "" . $_[0] },
+  datetime => sub {
+    my ($v, $in_out) = @_;
+    if ($in_out eq $CONVERT_IN) {
+      "" . $v;
+    } else {
+      Mos::Util::datetime_from_db($v);
+    }
+  },
+};
 
 sub import {
   my $class = caller(0);
@@ -17,14 +32,7 @@ sub import {
     }
 
     my $attributes = [];
-    my $time_attributes = [];
-
-    *{"$class\::normal_attributes"} = sub { $attributes };
-    *{"$class\::time_attributes"}   = sub { $time_attributes };
-    *{"$class\::attributes"} = sub {
-      my $class = shift;
-      [(@{$class->normal_attributes}, @{$class->time_attributes})];
-    };
+    *{"$class\::attributes"} = sub { $attributes };
   }
   1;
 }
@@ -32,69 +40,33 @@ sub import {
 sub new {
   my $class = shift;
   bless {
-    (@_ == 1 && ref $_[0] == "HASH") ? %{$_[0]} : @_
+    (@_ == 1 && ref $_[0] eq "HASH") ? %{$_[0]} : @_
   }, $class;
 }
 
-sub mk_attributes {
-  my @names = @_;
-  (@names > 0) or Carp::croak("require names");
+sub column ($$) {
+  my ($name, $type) = @_;
   my $class = caller(0);
 
   {
     no strict "refs";
-    *{"$class\::$_"} = _accessor($_) for @names;
+    *{"$class\::$name"} = _attribute($name, $type);
   }
 
-  if ($class->can("normal_attributes")) {
-    push @{$class->normal_attributes}, @names;
-  }
+  push @{$class->attributes}, $name;
 }
 
-sub _accessor {
-  my $name = shift;
+sub _attribute ($$) {
+  my ($name, $type) = @_;
   sub {
-    my ($self, $arg) = @_;
-    if (defined $arg) {
-      $self->write_attribute($name, $arg);
+    my ($self, $value) = @_;
+    if (defined $value) {
+      my $v = $TYPES->{$type}->($value, $CONVERT_IN);
+      $self->write_attribute($name, $v);
     } else {
-      $self->read_attribute($name);
+      my $v = $self->read_attribute($name);
+      $TYPES->{$type}->($v, $CONVERT_OUT);
     }
-  }
-}
-
-sub mk_time_attributes {
-  my @names = @_;
-  (@names > 0) or Carp::croak("require names");
-  my $class = caller(0);
-
-  {
-    no strict "refs";
-    for my $name (@names) {
-      *{"$class\::$name"} = _time_accessor($name);
-      *{"$class\::$name\_str"} = sub {
-        my $self = shift;
-        "" . ($self->$name || "");
-      }
-    }
-
-    if ($class->can("time_attributes")) {
-      push @{$class->time_attributes}, @names;
-    }
-  }
-}
-
-sub _time_accessor {
-  my $name = shift;
-  sub {
-    my ($self, $arg) = @_;
-    if (defined $arg) {
-      $self->write_attribute($name, "". $arg);
-      return;
-    }
-    $self->{"_$name"} ||= eval {
-      Mos::Util::datetime_from_db($self->read_attribute($name));
-    };
   };
 }
 

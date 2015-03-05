@@ -9,11 +9,8 @@ use Mos::Model;
 package main;
 
 subtest "DSL" => sub {
-  ok(Model::Test->can("mk_attributes"),      "has mk_attributes");
-  ok(Model::Test->can("mk_time_attributes"), "has mk_time_attributes");
-  ok(Model::Test->can("normal_attributes"),  "has normal_attributes");
-  ok(Model::Test->can("time_attributes"),    "has time_attributes");
-  ok(Model::Test->can("attributes"),         "has attributes");
+  ok(Model::Test->can("column"),     "has attributes");
+  ok(Model::Test->can("attributes"), "has attributes");
 };
 
 package Model::Person;
@@ -21,22 +18,14 @@ package Model::Person;
 use parent "Mos::Model";
 use Mos::Model;
 
-mk_attributes(qw(id name age));
-mk_time_attributes(qw(borned_at));
+column("id", "int");
+column("name", "string");
+column("age", "int");
+column("borned_at", "datetime");
 
 package main;
 
-subtest "normal attributes" => sub {
-  my $attributes = [qw( id name age)];
-  is_deeply(Model::Person->normal_attributes, $attributes, "normal attributes are id name age");
-};
-
-subtest "time attributes" => sub {
-  my $attributes = [qw( borned_at )];
-  is_deeply(Model::Person->time_attributes, $attributes, "time attributes are boarned_at");
-};
-
-subtest "time attributes" => sub {
+subtest "attributes" => sub {
   my $attributes = [qw( id name age borned_at )];
   is_deeply(Model::Person->attributes, $attributes, "time attributes are id name age boarned_at");
 };
@@ -69,7 +58,6 @@ sub test_time_attribute {
   my $expect = DateTime->new(year => 2015, month => 3, day => 4, hour => 16, minute => 23, second => 13);
   is($person->borned_at, $expect, "borned_at is '2015-03-04 16:23:13' as DateTime");
   isa_ok($person->borned_at, "DateTime", "borned_at isa DateTime");
-  is($person->borned_at_str, "2015-03-04 16:23:13", "borned_at_str is '2015-03-04 16:23:13' as string");
   is($person->{borned_at}, "2015-03-04 16:23:13", "raw borned_at_str is '2015-03-04 16:23:13' as string");
 }
 
