@@ -9,7 +9,7 @@ use Mos::Model;
 package main;
 
 subtest "DSL" => sub {
-  ok(Model::Test->can("column"),     "has attributes");
+  ok(Model::Test->can("column"),     "has column");
   ok(Model::Test->can("attribute_map"), "has attribute_map");
 };
 
