@@ -26,8 +26,8 @@ column("borned_at", "datetime");
 package main;
 
 subtest "attribute_map" => sub {
-  my $attributes = {id => "int", name => "string", age => "int", borned_at => "datetime"};
-  is_deeply(Model::Person->attribute_map, $attributes, "attributes are id name age boarned_at");
+  my $attribute_map = {id => "int", name => "string", age => "int", borned_at => "datetime"};
+  is_deeply(Model::Person->attribute_map, $attribute_map, "attributes are id name age boarned_at");
 };
 
 sub test_normal_attribute {
