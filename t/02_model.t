@@ -26,26 +26,31 @@ column("name", "string");
 column("age", "int");
 column("borned_at", "datetime");
 
+timestamp;
+
 package main;
 
 subtest "attribute_map" => sub {
-  my $attribute_map = {id => "int", name => "string", age => "int", borned_at => "datetime"};
-  is_deeply(Model::Person->attribute_map, $attribute_map, "attributes are id name age boarned_at");
+  my $attribute_map = {
+    id => "int", name => "string", age => "int", borned_at => "datetime",
+    created_at => "datetime", updated_at => "datetime",
+  };
+  is_deeply(Model::Person->attribute_map, $attribute_map, "attribute_map is correct");
 };
 
 subtest "attributes" => sub {
-  my $attributes = [ qw( age borned_at id name ) ];
-  is_deeply(Model::Person->attributes, $attributes, "attributes are id name age boarned_at");
+  my $attributes = [ qw( age borned_at created_at id name updated_at ) ];
+  is_deeply(Model::Person->attributes, $attributes, "attributes is correct");
 };
 
 subtest "normal attributes" => sub {
   my $attributes = [ qw( age id name ) ];
-  is_deeply(Model::Person->normal_attributes, $attributes, "attributes are id name age boarned_at");
+  is_deeply(Model::Person->normal_attributes, $attributes, "normal_attributes is correct");
 };
 
 subtest "time attributes" => sub {
-  my $attributes = [ qw( borned_at ) ];
-  is_deeply(Model::Person->time_attributes, $attributes, "attributes are id name age boarned_at");
+  my $attributes = [ qw( borned_at created_at updated_at ) ];
+  is_deeply(Model::Person->time_attributes, $attributes, "time_attributes is correct");
 };
 
 sub test_normal_attribute {
@@ -77,16 +82,33 @@ sub test_time_attribute {
   is($person->borned_at, $expect, "borned_at is '2015-03-04 16:23:13' as DateTime");
   isa_ok($person->borned_at, "DateTime", "borned_at isa DateTime");
   is($person->{borned_at}, "2015-03-04 16:23:13", "raw borned_at_str is '2015-03-04 16:23:13' as string");
+
+  $expect->set(year => 2016, month => 4, day => 5, hour => 17, minute => 24, second => 14);
+  is($person->created_at, $expect, "created_at is '2016-04-05 17::24:14' as DateTime");
+  isa_ok($person->created_at, "DateTime", "created_at isa DateTime");
+  is($person->{created_at}, "2016-04-05 17:24:14", "raw created_at is '2016-04-05 17:24:14' as string");
+
+  $expect->set(year => 2017, month => 5, day => 6, hour => 18, minute => 25, second => 15);
+  is($person->updated_at, $expect, "updated_at is '2017-05-06 18:25:15' as DateTime");
+  isa_ok($person->updated_at, "DateTime", "updated_at isa DateTime");
+  is($person->{updated_at}, "2017-05-06 18:25:15", "raw updated_at is '2017-05-06 18:25:15' as string");
 }
 
 subtest "get as time attribute" => sub {
-  my $person = Model::Person->new({borned_at => "2015-03-04 16:23:13"});
+  my $values = {
+    borned_at  => "2015-03-04 16:23:13",
+    created_at => "2016-04-05 17:24:14",
+    updated_at => "2017-05-06 18:25:15",
+  };
+  my $person = Model::Person->new($values);
   test_time_attribute($person);
 };
 
 subtest "set as time attribute" => sub {
   my $person = Model::Person->new;
   $person->borned_at("2015-03-04 16:23:13");
+  $person->created_at("2016-04-05 17:24:14");
+  $person->updated_at("2017-05-06 18:25:15");
   test_time_attribute($person);
 };
 

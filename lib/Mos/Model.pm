@@ -6,7 +6,7 @@ use warnings;
 use Carp ();
 use Mos::Util;
 
-our @EXPORT = qw(column);
+our @EXPORT = qw(column timestamp);
 
 our $CONVERT_IN  = "in";
 our $CONVERT_OUT = "out";
@@ -57,12 +57,21 @@ sub new {
 sub column ($$) {
   my ($name, $type) = @_;
   my $class = caller(0);
+  $class->_create_column($name, $type);
+}
 
+sub timestamp {
+  my $class = caller(0);
+  $class->_create_column("created_at", "datetime");
+  $class->_create_column("updated_at", "datetime");
+}
+
+sub _create_column ($$$) {
+  my ($class, $name, $type) = @_;
   {
     no strict "refs";
     *{"$class\::$name"} = _attribute($name, $type);
   }
-
   $class->attribute_map->{$name} = $type;
 }
 
