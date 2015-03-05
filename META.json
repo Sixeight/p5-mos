@@ -52,6 +52,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/Sixeight/p5-mos/issues"
+      },
+      "homepage" : "https://github.com/Sixeight/p5-mos",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/Sixeight/p5-mos.git",
+         "web" : "https://github.com/Sixeight/p5-mos"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:SIXEIGHT"
 }
