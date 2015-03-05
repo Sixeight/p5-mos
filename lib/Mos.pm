@@ -31,7 +31,7 @@ Mos - Simple O/R mapper for my Perl practice.
 
     package main;
 
-    Service::User->connect("dbi:SQLite:dbname=:memory");
+    Service::User->connect("dbi:SQLite:dbname=:memory:");
     Service::User->create({id => 1, name => "bob"});
     Service::User->create({id => 2, name => "alice"});
 
