@@ -73,6 +73,13 @@ sub is_connected {
   defined $class->dbh;
 }
 
+sub connect_if_needed {
+  my $class = shift;
+  unless ($class->is_connected) {
+    $class->connect;
+  }
+}
+
 sub transaction {
   my ($class, $block) = @_;
   if ($in_transaction) {
@@ -98,11 +105,9 @@ sub transaction {
 
 sub all {
   my ($class, $opts) = @_;
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   if (!defined $opts || ref $opts ne "HASH") {
     $opts = +{};
-  }
-  if (!$class->is_connected) {
-    $class->connect;
   }
   my $model_name = $class->model_name;
   my $table_name = $class->table_name;
@@ -116,6 +121,7 @@ sub all_by_ids {
   if (ref $user_ids ne "ARRAY") {
     return [];
   }
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   if (!defined $opts || ref $opts ne "HASH") {
     $opts = {};
   }
@@ -129,11 +135,9 @@ sub all_by_ids {
 
 sub find {
   my ($class, $where, $opts) = @_;
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   if (!defined $opts) {
     $opts = +{};
-  }
-  if (!$class->is_connected) {
-    $class->connect;
   }
   if (ref $where ne "HASH") {
     $where = {id => $where}
@@ -152,9 +156,7 @@ sub find {
 
 sub create {
   my ($class, $values, $opts) = @_;
-  if (!$class->is_connected) {
-    $class->connect;
-  }
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   (ref $values eq "HASH") or Carp::croak("require hash ref");
   if (!defined $opts || ref $opts ne "HASH") {
     $opts = +{};
@@ -175,9 +177,7 @@ sub create {
 
 sub update {
   my ($class, $model) = @_;
-  if (!$class->is_connected) {
-    $class->connect;
-  }
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   my $model_name = $class->model_name;
   (ref $model && $model->isa($model_name))
     or Carp::croak("invalid model: $model, require $model_name");
@@ -200,9 +200,7 @@ sub update {
 
 sub destroy {
   my ($class, $model, $opts) = @_;
-  if (!$class->is_connected) {
-    $class->connect;
-  }
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   my $model_name = $class->model_name;
   (ref $model && $model->isa($model_name))
     or Carp::croak("invalid model: $model, require $model_name");
@@ -214,6 +212,7 @@ sub destroy {
 
 sub delete {
   my ($class, $where, $opts) = @_;
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   (ref $where eq "HASH") or Carp::croak("need hash ref");
   if (!defined $opts || ref $opts ne "HASH") {
     $opts = {};
@@ -225,9 +224,7 @@ sub delete {
 
 sub query {
   my $class = shift;
-  if (!$class->is_connected) {
-    $class->connect;
-  }
+  $class->connect_if_needed or Carp::croak("failed to connect database");
   $class->dbh->query(_expand_query(@_));
 }
 
