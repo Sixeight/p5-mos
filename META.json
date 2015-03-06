@@ -48,6 +48,7 @@
             "DateTime" : "0",
             "DateTime::Format::MySQL" : "0",
             "SQL::Maker" : "0",
+            "SQL::NamedPlaceholder" : "0",
             "perl" : "5.008001"
          }
       },
