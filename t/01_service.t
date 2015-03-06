@@ -143,8 +143,8 @@ subtest "delete" => sub {
 
 subtest "query" => sub {
   Service::User->query("INSERT INTO users (id, name) VALUES (?, ?)", 123, "query1");
-  my $query1 = Service::User->find(123);
-  is($query1->name, "query1", "query with placeholder");
+  my $user = Service::User->find(123);
+  is($user->name, "query1", "query with placeholder");
 };
 
 subtest "transaction" => sub {
