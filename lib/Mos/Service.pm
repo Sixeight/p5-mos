@@ -71,6 +71,23 @@ sub is_connected {
   defined $class->dbh;
 }
 
+sub transaction {
+  my ($class, $block) = @_;
+  my $ac = $class->dbh->{AutoCommit};
+  my $re = $class->dbh->{RaiseError};
+  $class->dbh->{AutoCommit} = 0;
+  $class->dbh->{RaiseError} = 1;
+  eval {
+    $block->($class);
+    $class->dbh->commit;
+  };
+  if ($@) {
+    $class->dbh->rollback;
+  }
+  $class->dbh->{RaiseError} = $re;
+  $class->dbh->{AutoCommit} = $ac;
+}
+
 sub all {
   my ($class, $opts) = @_;
   if (!defined $opts || ref $opts ne "HASH") {

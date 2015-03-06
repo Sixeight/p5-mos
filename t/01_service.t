@@ -123,4 +123,47 @@ subtest "update user" => sub {
   is($user->name, "updated", "user name is updated");
 };
 
+subtest "transaction" => sub {
+  my $ac = Service::User->dbh->{AutoCommit};
+  my $re = Service::User->dbh->{RaiseError};
+  Service::User->transaction(sub {
+    ok(!Service::User->dbh->{AutoCommit}, "inner transaction block auto commit off");
+    ok( Service::User->dbh->{RaiseError}, "inner transaction block raise error on");
+    my $service = shift;
+    $service->create({id => 20, name => "cat"});
+    $service->create({id => 30, name => "dog"});
+  });
+  is(Service::User->dbh->{AutoCommit}, $ac, "outer transaction block auto commit status is back");
+  is(Service::User->dbh->{RaiseError}, $re, "outer transaction block raise error status is back");
+  my $user = Service::User->find(20);
+  is($user->name, "cat", "transaction has been commited");
+};
+
+subtest "transaction(rollback)" => sub {
+  Service::User->transaction(sub {
+    my $service = shift;
+    $service->create({id => 200, name => "cat"});
+    $service->create({id => 300, nmae => "dog"}); # typo!
+  });
+  my $user = Service::User->find(200);
+  is($user, undef, "roll backed");
+};
+
+sub with_transaction {
+  Service::User->transaction(sub {
+    my $s = shift;
+    $s->create({id => 1000, name => "cake"});
+  });
+}
+
+subtest "nested transaction" => sub {
+  Service::User->transaction(sub {
+    my $s = shift;
+    $s->create({id => 1500, name => "banana"});
+    with_transaction();
+  });
+  my $user = Service::User->find(1000);
+  is($user->name, "cake", "transaction has been commited");
+};
+
 done_testing;
