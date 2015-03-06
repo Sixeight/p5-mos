@@ -196,4 +196,12 @@ sub update {
   $class->dbh->query($query, @binds);
 }
 
+sub query {
+  my $class = shift;
+  if (!$class->is_connected) {
+    $class->connect;
+  }
+  $class->dbh->query(@_);
+}
+
 1;
