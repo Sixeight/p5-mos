@@ -6,6 +6,7 @@ use utf8;
 
 use DBIx::Sunny;
 use SQL::Maker;
+use SQL::NamedPlaceholder ();
 use Carp ();
 use Class::Load ();
 
@@ -227,7 +228,19 @@ sub query {
   if (!$class->is_connected) {
     $class->connect;
   }
-  $class->dbh->query(@_);
+  $class->dbh->query(_expand_query(@_));
+}
+
+sub _expand_query {
+  my $query = shift;
+  my @binds = @_;
+
+  if (@_ == 1 && ref $_[0] eq "HASH") {
+    ($query, my $binds) = SQL::NamedPlaceholder::bind_named($query, $_[0]);
+    @binds = @$binds;
+  }
+
+  ($query, @binds);
 }
 
 1;

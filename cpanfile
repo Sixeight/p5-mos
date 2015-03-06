@@ -4,6 +4,7 @@ requires "Carp";
 requires "Class::Load";
 requires "DBIx::Sunny";
 requires "SQL::Maker";
+requires "SQL::NamedPlaceholder;"
 requires "DateTime";
 requires "DateTime::Format::MySQL";
 

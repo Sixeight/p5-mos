@@ -147,6 +147,13 @@ subtest "query" => sub {
   is($user->name, "query1", "query with placeholder");
 };
 
+subtest "query with named placeholder" => sub {
+  my $query = "INSERT INTO users (id, name) VALUES (:id, :name)";
+  Service::User->query($query, {id => 135, name => "panda"});
+  my $user = Service::User->find(135);
+  is($user->name, "panda", "query with named placeholder");
+};
+
 subtest "transaction" => sub {
   my $ac = Service::User->dbh->{AutoCommit};
   my $re = Service::User->dbh->{RaiseError};
