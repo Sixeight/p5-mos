@@ -132,6 +132,15 @@ subtest "destroy" => sub {
   ok(!defined $user, "there is no user after destroy")
 };
 
+subtest "delete" => sub {
+  Service::User->create({id => 789, name => "mr. delete"});
+  my $user = Service::User->find(789);
+  ok(defined $user, "there is a user before destroy");
+  Service::User->delete({id => 789});
+  $user = Service::User->find(789);
+  ok(!defined $user, "there is no user after destroy")
+};
+
 subtest "query" => sub {
   Service::User->query("INSERT INTO users (id, name) VALUES (?, ?)", 123, "query1");
   my $query1 = Service::User->find(123);
