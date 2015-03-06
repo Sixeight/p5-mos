@@ -178,7 +178,7 @@ sub update {
     $class->connect;
   }
   my $model_name = $class->model_name;
-  ($model->isa($model_name)) or Carp::croak("invalid model: $model, require $model_name");
+  (ref $model && $model->isa($model_name)) or Carp::croak("invalid model: $model, require $model_name");
   my $set = {
     map  { $_ => $model->{$_} }
     grep { $_ ne "id" }
