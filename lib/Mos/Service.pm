@@ -170,7 +170,8 @@ sub create {
   }
   my $table_name = $class->table_name;
   my ($query, @binds) = $class->query_builder->insert($table_name, $values, $opts);
-  $class->query($query, @binds);
+  my $rc = $class->query($query, @binds);
+  $rc ? $class->dbh->last_insert_id : undef;
 }
 
 sub update {
@@ -193,7 +194,8 @@ sub update {
   my $table_name = $class->table_name;
   my $where = +{id => $model->id};
   my ($query, @binds) = $class->query_builder->update($table_name, $set, $where);
-  $class->query($query, @binds);
+  my $rc = $class->query($query, @binds);
+  $rc ? $class->dbh->last_insert_id : undef;
 }
 
 sub destroy {

@@ -112,8 +112,8 @@ subtest "all_by_ids" => sub {
 
 subtest "create new user" => sub {
   my $parameters = {id => 100, name => "test-name"};
-  my $ret = Service::User->create($parameters);
-  ok($ret, "create success");
+  my $id = Service::User->create($parameters);
+  is($id, 100, "create success");
   my $user = Service::User->find(100);
   is($user->name, $parameters->{name}, "user name is test-name");
 };
