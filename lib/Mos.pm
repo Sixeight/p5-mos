@@ -59,10 +59,6 @@ Please B<DO NOT USE> on production environment.
 
 =item
 
-Transaction
-
-=item
-
 Documentation
 
 =back

@@ -42,7 +42,6 @@ Please **DO NOT USE** on production environment.
 
 # TODO
 
-- Transaction
 - Documentation
 
 # LICENSE
