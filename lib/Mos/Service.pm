@@ -14,6 +14,7 @@ use Mos::Util;
 our $UPDATE_ATTRIBUTE_NAME = "updated_at";
 
 my $dbh;
+my $in_transaction = 0;
 my $query_builder;
 
 sub dbh {
@@ -73,12 +74,18 @@ sub is_connected {
 
 sub transaction {
   my ($class, $block) = @_;
+  if ($in_transaction) {
+    $block->($class);
+    return;
+  }
   my $ac = $class->dbh->{AutoCommit};
   my $re = $class->dbh->{RaiseError};
   $class->dbh->{AutoCommit} = 0;
   $class->dbh->{RaiseError} = 1;
   eval {
+    $in_transaction = 1;
     $block->($class);
+    $in_transaction = 0;
     $class->dbh->commit;
   };
   if ($@) {
