@@ -118,9 +118,7 @@ sub all {
 
 sub all_by_ids {
   my ($class, $user_ids, $opts) = @_;
-  if (ref $user_ids ne "ARRAY") {
-    return [];
-  }
+  return [] if ref $user_ids ne "ARRAY";
   $class->connect_if_needed or Carp::croak("failed to connect database");
   if (!defined $opts || ref $opts ne "HASH") {
     $opts = {};

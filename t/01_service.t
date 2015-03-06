@@ -100,7 +100,11 @@ subtest "find with query" => sub {
 };
 
 subtest "all_by_ids" => sub {
-  my $users = Service::User->all_by_ids([1, 3, 5]);
+  my $users = Service::User->all_by_ids;
+  is_deeply($users, [], "returns [] when without ids");
+  $users = Service::User->all_by_ids([]);
+  is_deeply($users, [], "returns [] when with empty array");
+  $users = Service::User->all_by_ids([1, 3, 5]);
   is($users->[0]->id, 1, "id 1 is fetched");
   is($users->[1]->id, 3, "id 3 is fetched");
   is($users->[2]->id, 5, "id 5 is fetched");
