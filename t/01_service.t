@@ -123,6 +123,15 @@ subtest "update user" => sub {
   is($user->name, "updated", "user name is updated");
 };
 
+subtest "destroy" => sub {
+  Service::User->create({id => 345, name => "will delete"});
+  my $user = Service::User->find(345);
+  ok(defined $user, "there is a user before destroy");
+  Service::User->destroy($user);
+  $user = Service::User->find(345);
+  ok(!defined $user, "there is no user after destroy")
+};
+
 subtest "query" => sub {
   Service::User->query("INSERT INTO users (id, name) VALUES (?, ?)", 123, "query1");
   my $query1 = Service::User->find(123);

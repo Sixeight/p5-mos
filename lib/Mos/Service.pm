@@ -197,6 +197,31 @@ sub update {
   $class->dbh->query($query, @binds);
 }
 
+sub destroy {
+  my ($class, $model, $opts) = @_;
+  if (!$class->is_connected) {
+    $class->connect;
+  }
+  my $model_name = $class->model_name;
+  (ref $model && $model->isa($model_name))
+    or Carp::croak("invalid model: $model, require $model_name");
+  if (!defined $opts || ref $opts ne "HASH") {
+    $opts = {};
+  }
+  $class->delete({id => $model->id}, $opts);
+}
+
+sub delete {
+  my ($class, $where, $opts) = @_;
+  (ref $where eq "HASH") or Carp::croak("need hash ref");
+  if (!defined $opts || ref $opts ne "HASH") {
+    $opts = {};
+  }
+  my $table_name = $class->table_name;
+  my ($query, @binds) = $class->query_builder->delete($table_name, $where, $opts);
+  $class->query($query, @binds);
+}
+
 sub query {
   my $class = shift;
   if (!$class->is_connected) {
