@@ -169,7 +169,7 @@ sub create {
   }
   my $table_name = $class->table_name;
   my ($query, @binds) = $class->query_builder->insert($table_name, $values, $opts);
-  $class->dbh->query($query, @binds);
+  $class->query($query, @binds);
 }
 
 sub update {
@@ -194,7 +194,7 @@ sub update {
   my $table_name = $class->table_name;
   my $where = +{id => $model->id};
   my ($query, @binds) = $class->query_builder->update($table_name, $set, $where);
-  $class->dbh->query($query, @binds);
+  $class->query($query, @binds);
 }
 
 sub destroy {
